@@ -307,7 +307,9 @@ public class MultiSimSettingController extends Handler {
     private void onAllSubscriptionsLoaded() {
         if (DBG) log("onAllSubscriptionsLoaded");
         mSubInfoInitialized = true;
-        reEvaluateAll();
+        updateDefaults(/*init*/ true);
+        disableDataForNonDefaultNonOpportunisticSubscriptions();
+        deactivateGroupedOpportunisticSubscriptionIfNeeded();
     }
 
     /**
@@ -781,12 +783,11 @@ public class MultiSimSettingController extends Handler {
             EuiccManager euiccManager = (EuiccManager)
                     mContext.getSystemService(Context.EUICC_SERVICE);
             euiccManager.switchToSubscription(SubscriptionManager.INVALID_SUBSCRIPTION_ID,
-                    PendingIntent.getService(
-                            mContext, 0, new Intent(), PendingIntent.FLAG_IMMUTABLE));
+                    PendingIntent.getService(mContext, 0, new Intent(), 0));
         }
     }
 
-    protected void log(String msg) {
+    private void log(String msg) {
         Log.d(LOG_TAG, msg);
     }
 
